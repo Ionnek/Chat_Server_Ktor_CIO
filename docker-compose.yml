@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: my-postgres-db
+    environment:
+      POSTGRES_USER: DBUser
+      POSTGRES_PASSWORD: DBpass
+      POSTGRES_DB: DBname
+    ports:
+      - "5432:5432"
+
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: chat-server
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=jdbc:postgresql://db:5432/DBname
+      - DATABASE_USER=DBUser
+      - DATABASE_PASSWORD=DBpass
+
+      - JWT_SECRET=MY_SUPER_SECRET
+      - JWT_ISSUER=myapp
+      - JWT_AUDIENCE=myappAudience
+      - JWT_VALIDITYMS=3600000
